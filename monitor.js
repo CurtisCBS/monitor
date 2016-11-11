@@ -47,13 +47,16 @@
       "AUDIO":ERROR_AUDIO,
       "VIDEO":ERROR_VIDEO
     };
-    var errNode = err.srcElement.nodeName;
-    if(errNode && ERR_TYPE[errNode.toUpperCase()]){
-      pushError({
-        type:ERR_TYPE[errNode.toUpperCase()],
-        des:err.srcElement.src || err.srcElement.href
-      });
-      setTimer(handler);
+    if(err.target !== window){//过滤window的异常,避免与上面的onerror重复
+      var errNode = err.target.nodeName;
+      if(errNode && ERR_TYPE[errNode.toUpperCase()]){
+        var des = err.target.baseURI + "@" + ( err.target.src || err.target.href );
+        pushError({
+          type:ERR_TYPE[errNode.toUpperCase()],
+          des:des
+        });
+        setTimer(handler);
+      }
     }
 
   }, true);
