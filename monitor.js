@@ -38,7 +38,6 @@
 
   //监听资源加载错误(JavaScript Scource failed to load)
   window.addEventListener('error', function(err){
-    clearTimer()
     // 过滤非资源加载的错误
     var ERR_TYPE = {
       "SCRIPT":ERROR_SCRIPT,
@@ -48,6 +47,7 @@
       "VIDEO":ERROR_VIDEO
     };
     if(err.target !== window){//过滤window的异常,避免与上面的onerror重复
+      clearTimer();
       var errNode = err.target.nodeName;
       if(errNode && ERR_TYPE[errNode.toUpperCase()]){
         var des = err.target.baseURI + "@" + ( err.target.src || err.target.href );
