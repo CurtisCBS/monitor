@@ -16,7 +16,8 @@
       ERROR_STYLE = 3,
       ERROR_IMAGE = 4,
       ERROR_AUDIO = 5,
-      ERROR_VIDEO = 6;
+      ERROR_VIDEO = 6,
+      ERROR_CONSOLE = 7;
 
   var MAX_ERR_NUM = 10;//一个页面最大异常报错数量限制
 
@@ -27,7 +28,20 @@
   var delay = 1000;//两次error间隔在3000ms内不重复请求错误
 
   var error_log = new Array(); //存储错误日志的数组
-
+  // 针对vue报错使用的是error。重写的方法
+  console.error = (function(origin){
+    return function(errorlog)
+    {
+      clearTimer();
+      pushError({
+        type:ERROR_CONSOLE,
+        des:errorlog
+      });
+      setTimer(handler);
+      origin.call(console,errorlog);
+    }
+  })(console.error);
+  
   //监听js报错异常(JavaScript runtime error)
   window.onerror = function(messageOrEvent, source, lineno, colno, error){
     clearTimer()
