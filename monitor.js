@@ -18,18 +18,17 @@
     ERROR_IMAGE = 4,
     ERROR_AUDIO = 5,
     ERROR_VIDEO = 6,
-    ERROR_CONSOLE = 7;
+    ERROR_CONSOLE = 7,
+    MAX_ERR_NUM = 10, //一个页面最大异常报错数量限制
+    error_num = 0, // 异常数量
+    timer = null, //定时器，防止短时间内重复请求
+    delay = 1000, //两次error间隔在3000ms内不重复请求错误
+    error_log = new Array(); //存储错误日志的数组
 
-  var MAX_ERR_NUM = 10; //一个页面最大异常报错数量限制
 
-  var error_num = 0; // 异常数量
-
-  var timer = null; //定时器，防止短时间内重复请求
-
-  var delay = 1000; //两次error间隔在3000ms内不重复请求错误
-
-  var error_log = new Array(); //存储错误日志的数组
-  // 针对vue报错使用的是error。重写的方法
+  /**
+   *针对vue报错使用的是error。重写的方法
+   */
   console.error = (function(origin) {
     return function(errorlog) {
       clearTimer();
@@ -42,7 +41,9 @@
     }
   })(console.error);
 
-  //监听js报错异常(JavaScript runtime error)
+  /**
+   *监听js报错异常(JavaScript runtime error)
+   */
   window.onerror = function(messageOrEvent, source, lineno, colno, error) {
     clearTimer()
     var error = createRuntimerError(messageOrEvent, source, lineno, colno,
@@ -51,7 +52,9 @@
     setTimer(handler);
   };
 
-  //监听资源加载错误(JavaScript Scource failed to load)
+  /**
+   *监听资源加载错误(JavaScript Scource failed to load)
+   */
   window.addEventListener('error', function(err) {
     // 过滤非资源加载的错误
     var ERR_TYPE = {
@@ -77,21 +80,33 @@
 
   }, true);
 
+  /**
+   *清除定时器
+   */
   function clearTimer() {
     clearTimeout(timer);
   }
 
+  /**
+   *设置定时器
+   */
   function setTimer(callback) {
     timer = setTimeout(function() {
       callback && callback();
     }, delay);
   }
 
+  /**
+   *记录成功后的操作，自定义
+   */
   function handler() {
     console.table(error_log);
     console.log("发送请求");
   }
 
+  /**
+   *往‘异常信息’数组里面添加一条记录
+   */
   function pushError(err) {
     if (error_num < MAX_ERR_NUM) {
       error_log.push(err);
@@ -113,4 +128,20 @@
     }
   }
 
+
+  if (window.performance) {
+    var sources = window.performance.getEntries(),
+      entries;
+    entries = sources.map(function(entry) {
+      return {
+        type: entry.initiatorType, //资源类型 ，字符串
+        duration: entry.duration, //资源请求时间
+        source: name, //资源名字
+        startTime: entry.startTime, //资源请求开始时间
+        endTime: connectEnd //资源请求结束时间
+      }
+    });
+
+    // 自定义事件，保存数据到服务端
+  }
 }());
