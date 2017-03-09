@@ -1,5 +1,6 @@
 # web页面js异常捕获
 
+原文地址: [https://github.com/CurtisCBS/monitor](https://github.com/CurtisCBS/monitor) 欢迎star
 ## 简介
 通过对error的监听，获取异常的相关信息并添加这些信息到异常信息数组，在达到上限或者一定时间之后做处理(返回服务端保存数据之类)
 
