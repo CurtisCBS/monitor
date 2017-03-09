@@ -33,3 +33,9 @@ event+错误来源(source)+错误行数+错误列数等数据
 
 	1.记录pv和uv
 	2.记录页面加载时长
+## 兼容性
+performance接口的兼容性 (看到nosupport绝望，iOS不可用！)
+
+Chrome	Edge | Firefox (Gecko) | Internet Explorer | Opera | Safari (WebKit)
+---|---|---|---|---|---|---
+43.0|yes|41|10|33|No support
