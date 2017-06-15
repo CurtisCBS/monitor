@@ -37,5 +37,5 @@ event+错误来源(source)+错误行数+错误列数等数据
 performance接口的兼容性 (看到nosupport绝望，iOS不可用！)
 
 Chrome |	Edge | Firefox (Gecko) | Internet Explorer | Opera | Safari (WebKit)
----|---|---|---|---|---|------
-43.0|yes|41|10|33|No support
+--- | --- | --- | --- | --- | --- | ------
+43.0 | yes | 41 | 10 | 33 | No support
