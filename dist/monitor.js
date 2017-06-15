@@ -7,8 +7,8 @@
 /**
  * debounce
  *
- * @param func {Function} 实际要执行的函数
- * @param delay {Number} 延迟时间，单位是 ms
+ * @param {Function} func 实际要执行的函数
+ * @param {Number} delay 延迟时间，单位是 ms
  *
  * @return {Function}
  */
@@ -45,7 +45,7 @@ function merge(src, dest) {
 /**
  * 是否是函数
  *
- * @param  {Any}  func 判断对象
+ * @param  {Any} func 判断对象
  * @return {Boolean}
  */
 function isFunction(func) {
