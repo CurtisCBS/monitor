@@ -6,5 +6,5 @@ export default {
   entry: 'src/monitor.js',
   format: 'umd',
   moduleName: name,
-  dest: `dist/${name}.js` // equivalent to --output
+  dest: `dist/${name}.js`
 }
