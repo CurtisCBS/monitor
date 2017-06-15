@@ -2,13 +2,14 @@ function clickHandle() {
   var b = a.c
 }
 
-tryJS.config({
+
+monitor.tryJS.config({
   handleError: function() {
     console.log('you found me')
   }
 })
 
-clickHandle = tryJS.wrapFunction(clickHandle)
+clickHandle = monitor.tryJS.wrapFunction(clickHandle)
 document.querySelector('.send').addEventListener('click', clickHandle)
 
 
@@ -24,7 +25,7 @@ function goHome(type, callback) {
 //   console.log(ming = tian)
 // })
 
-(tryJS.wrapArgs(goHome))(4, function() {
+(monitor.tryJS.wrapArgs(goHome))(4, function() {
   console.log('done')
   console.log(ming = tian)
 })

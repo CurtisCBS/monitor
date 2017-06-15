@@ -91,6 +91,7 @@ function formatRuntimerError(message, source, lineno, colno) {
 
 /**
  * 生成 laod 错误日志
+ *
  * @param  {Object} errorTarget
  * @return {Object}
  */
