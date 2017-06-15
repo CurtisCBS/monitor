@@ -1,4 +1,16 @@
-var tryJS = (function() {
+(function(root, factory) {
+  var library = 'tryJS'
+
+  if (typeof define === 'function' && define.amd) {
+    define([], factory)
+  } else if (typeof exports === 'object' && typeof module === 'object') {
+    module.exports = factory()
+  } else if (typeof exports === 'object') {
+    exports[library] = factory()
+  } else {
+    root[library] = factory()
+  }
+})(this, function() {
   // base
   var isFunction = function(func) {
     return Object.prototype.toString.call(func) === '[object Function]'
@@ -61,4 +73,4 @@ var tryJS = (function() {
   tryJS.wrapArgs = tryifyArgs
 
   return tryJS
-})()
+})
