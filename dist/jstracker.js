@@ -106,7 +106,7 @@ function tryifyArgs(func) {
   }
 }
 
-tryJS.wrapFunction = function(func) {
+tryJS.wrap = function(func) {
   return isFunction(func) ? tryify(func) : func
 };
 
