@@ -7,17 +7,15 @@ import {
 var tryJS = {}
 
 var config = {
-  handleError: function(error) {
-    console.log(error)
-  }
+  handleCatchError: function() {}
 }
 
-tryJS.config = function(opts) {
+export function setting(opts) {
   merge(opts, config)
 }
 
 /**
- * 将函数使用 try catch 包装
+ * 将函数使用 try..catch 包装
  *
  * @param  {Function} func 需要进行包装的函数
  * @return {Function} 包装后的函数
@@ -27,7 +25,7 @@ function tryify(func) {
     try {
       return func.apply(this, arguments)
     } catch (error) {
-      config.handleError(error)
+      config.handleCatchError(error)
 
       throw error
     }
@@ -51,9 +49,7 @@ function tryifyArgs(func) {
 }
 
 tryJS.wrapFunction = function(func) {
-  if (!isFunction(func)) return func
-
-  return tryify(func)
+  return isFunction(func) ? tryify(func) : func
 }
 
 tryJS.wrapArgs = tryifyArgs

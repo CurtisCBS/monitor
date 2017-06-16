@@ -2,15 +2,16 @@ function clickHandle() {
   var b = a.c
 }
 
+console.log(jstracker)
 
-monitor.tryJS.config({
-  handleError: function() {
-    console.log('you found me')
+jstracker.config({
+  handleCatchError: function(data) {
+    console.log(data.stack)
   }
 })
 
-clickHandle = monitor.tryJS.wrapFunction(clickHandle)
-document.querySelector('.send').addEventListener('click', clickHandle)
+var clickHandleTry = jstracker.tryJS.wrapFunction(clickHandle)
+document.querySelector('.send').addEventListener('click', clickHandleTry)
 
 
 function goHome(type, callback) {
@@ -25,7 +26,7 @@ function goHome(type, callback) {
 //   console.log(ming = tian)
 // })
 
-(monitor.tryJS.wrapArgs(goHome))(4, function() {
+(jstracker.tryJS.wrapArgs(goHome))(4, function() {
   console.log('done')
   console.log(ming = tian)
 })

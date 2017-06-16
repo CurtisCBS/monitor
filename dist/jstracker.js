@@ -1,7 +1,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
-	(global.monitor = factory());
+	(global.jstracker = factory());
 }(this, (function () { 'use strict';
 
 /**
@@ -65,17 +65,15 @@ function arrayFrom(arrayLike) {
 var tryJS = {};
 
 var config$1 = {
-  handleError: function(error) {
-    console.log(error);
-  }
+  handleCatchError: function() {}
 };
 
-tryJS.config = function(opts) {
+function setting(opts) {
   merge(opts, config$1);
-};
+}
 
 /**
- * 将函数使用 try catch 包装
+ * 将函数使用 try..catch 包装
  *
  * @param  {Function} func 需要进行包装的函数
  * @return {Function} 包装后的函数
@@ -85,7 +83,7 @@ function tryify(func) {
     try {
       return func.apply(this, arguments)
     } catch (error) {
-      config$1.handleError(error);
+      config$1.handleCatchError(error);
 
       throw error
     }
@@ -109,9 +107,7 @@ function tryifyArgs(func) {
 }
 
 tryJS.wrapFunction = function(func) {
-  if (!isFunction(func)) return func
-
-  return tryify(func)
+  return isFunction(func) ? tryify(func) : func
 };
 
 tryJS.wrapArgs = tryifyArgs;
@@ -121,19 +117,26 @@ monitor.tryJS = tryJS;
 
 // 错误日志列表
 var errorList = [];
+// 错误处理回调
+var report = function() {};
 
 var config = {
   delay: 2000, // 错误处理间隔时间
   maxError: 16, // 异常报错数量限制
   sampling: 1, // 采样率
-  report: function() {
+  report: function(errorList) {
     console.table(errorList);
-    console.log('发送请求');
   }
 };
 
 monitor.config = function(opts) {
   merge(opts, config);
+
+  setting({
+    handleCatchError: config.handleCatchError
+  });
+
+  report = debounce(config.report, config.delay);
 };
 
 // 定义的错误类型码
@@ -153,26 +156,22 @@ var LOAD_ERROR_TYPE = {
   VIDEO: ERROR_VIDEO
 };
 
-var report = debounce(config.report, config.delay);
-
-
 // 监听 JavaScript 报错异常(JavaScript runtime error)
-window.onerror = function(messageOrEvent, source, lineno, colno, error) {
-  var errorLog = formatRuntimerError(messageOrEvent, source, lineno, colno, error);
-
-  handleError(errorLog);
+window.onerror = function() {
+  handleError(formatRuntimerError.apply(null, arguments));
 };
 
 // 监听资源加载错误(JavaScript Scource failed to load)
-window.addEventListener('error', function(err) {
+window.addEventListener('error', function(event) {
   // 过滤 target 为 window 的异常，避免与上面的 onerror 重复
-  var errorTarget = err.target;
+  var errorTarget = event.target;
   if (errorTarget !== window && errorTarget.nodeName && LOAD_ERROR_TYPE[errorTarget.nodeName.toUpperCase()]) {
     handleError(formatLoadError(errorTarget));
   }
 }, true);
 
 // 针对 vue 报错重写 console.error
+// TODO
 console.error = (function(origin) {
   return function(info) {
     var errorLog = {
@@ -192,30 +191,39 @@ console.error = (function(origin) {
  * @param  {String} source  发生错误的脚本 URL
  * @param  {Number} lineno  发生错误的行号
  * @param  {Number} colno   发生错误的列号
+ * @param  {Object} error   error 对象
  * @return {Object}
  */
-function formatRuntimerError(message, source, lineno, colno) {
+function formatRuntimerError(message, source, lineno, colno, error) {
   return {
     type: ERROR_RUNTIME,
-    desc: message + ' at ' + source + ':' + lineno + ':' + colno
+    desc: message + ' at ' + source + ':' + lineno + ':' + colno,
+    stack: error && error.stack ? error.stack : 'no stack'
   }
 }
 
 /**
  * 生成 laod 错误日志
+ *
  * @param  {Object} errorTarget
  * @return {Object}
  */
 function formatLoadError(errorTarget) {
   return {
     type: LOAD_ERROR_TYPE[errorTarget.nodeName.toUpperCase()],
-    desc: errorTarget.baseURI + '@' + (errorTarget.src || errorTarget.href)
+    desc: errorTarget.baseURI + '@' + (errorTarget.src || errorTarget.href),
+    stack: 'no stack'
   }
 }
 
+/**
+ * 错误数据预处理
+ *
+ * @param  {Object} errorLog    错误日志
+ */
 function handleError(errorLog) {
   pushError(errorLog);
-  report();
+  report(errorList);
 }
 
 /**
