@@ -23,6 +23,53 @@
 
 ## 使用指南
 
+### API
+
+example:
+
+```javascript
+jstracker.config({
+  delay: 1000,
+  maxError: 10,
+  sampling: 1,
+  report: function(errorLogs) {
+    console.table(errorLogs)
+  }
+})
+```
+
+| 字段       | 描述             | 类型       | 默认值                                     | 备注       |
+| -------- | -------------- | -------- | --------------------------------------- | -------- |
+| delay    | 错误处理间隔时间，单位 ms | Number   | 2000                                    |          |
+| maxError | 异常报错数量限制       | Number   | 16                                      |          |
+| sampling | 采样率            | Number   | 1                                       | 0 - 1 之间 |
+| report   | 错误报告函数         | Function | `errorLogs => console.tabel(errorLogs)` |          |
+
+#### 关于 errorLogs：
+
+```javascript
+[
+  {
+    type: 1, // 参考错误类型
+    desc: '', // 错误描述信息
+    stack: 'no stack' // 堆栈信息
+  },
+  // ...
+]
+```
+
+#### 错误类型
+
+```javascript
+var ERROR_RUNTIME = 1
+var ERROR_SCRIPT = 2
+var ERROR_STYLE = 3
+var ERROR_IMAGE = 4
+var ERROR_AUDIO = 5
+var ERROR_VIDEO = 6
+var ERROR_CONSOLE = 7
+```
+
 ### script
 
 ```html
@@ -32,7 +79,7 @@
   jstracker.config({
     report: function(data) {
       console.table(data)
-      console.log('发送请求')
+      console.log('send')
     }
   })
 </script>
@@ -54,21 +101,9 @@ import jstracker from 'jstracker'
 jstracker.config({
   report: function(data) {
     console.table(data)
-    console.log('发送请求')
+    console.log('send')
   }
 })
-```
-
-## 错误类型
-
-```javascript
-var ERROR_RUNTIME = 1
-var ERROR_SCRIPT = 2
-var ERROR_STYLE = 3
-var ERROR_IMAGE = 4
-var ERROR_AUDIO = 5
-var ERROR_VIDEO = 6
-var ERROR_CONSOLE = 7
 ```
 
 ## 后续功能
