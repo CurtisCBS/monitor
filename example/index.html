@@ -1,5 +1,6 @@
 <html>
   <head>
+    <title>Example for monitor</title>
     <meta charset="utf-8" />
     <script src="../dist/jstracker.js"></script>
     <script src="http://cdn.bootcss.com/jquery/1.12.2/jquery.min.js"></script>
@@ -7,6 +8,14 @@
     <link  href="http://xxxxxxxxxxxxxx.com/xxxx.css" rel="stylesheet" type="text/css"/>
   </head>
   <body>
+    <script>
+      jstracker.config({
+        report: function(data) {
+          console.table(data)
+          console.log('发送请求')
+        }
+      })
+    </script>
     <img src="http://xxxxxxxxxxxxxx.com/xxxx.jpg" />
 
     <embed src="rect.svg" width="300" height="100"

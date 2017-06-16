@@ -2,10 +2,11 @@ function clickHandle() {
   var b = a.c
 }
 
+console.log(jstracker)
 
-jstracker.tryJS.config({
-  handleError: function() {
-    console.log('you found me')
+jstracker.config({
+  handleCatchError: function(data) {
+    console.log(data.stack)
   }
 })
 
