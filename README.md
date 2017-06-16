@@ -10,7 +10,7 @@
 
 1. JavaScript runtime 异常捕捉 √
 2. 静态资源 load faided 异常捕捉 √
-3. console.error 的异常捕获
+3. console.error 的异常捕获 √
 4. 记录静态资源加载时长
 
 ## 实现概述
@@ -19,7 +19,7 @@
 
 * 通过对 `window.addEventListener` 监听 `error` 事件类型，获取静态资源报错，包含 JavaScript 文件，CSS 文件，图片，视频，音频。
 
-* 主要针对vue的异常捕获，重写了 `console.error` 事件，在捕获异常先记录错误信息的描述，再 `next` 到原始的 `console.error`
+* 主要针对 vue 的异常捕获，重写了 `console.error` 事件，在捕获异常先记录错误信息的描述，再 `next` 到原始的 `console.error`
 
 ## 使用指南
 
@@ -34,16 +34,20 @@ jstracker.config({
   sampling: 1,
   report: function(errorLogs) {
     console.table(errorLogs)
+  },
+  handleCatchError: function(error) {
+    console.log(error.stack)
   }
 })
 ```
 
-| 字段       | 描述             | 类型       | 默认值                                     | 备注       |
-| -------- | -------------- | -------- | --------------------------------------- | -------- |
-| delay    | 错误处理间隔时间，单位 ms | Number   | 2000                                    |          |
-| maxError | 异常报错数量限制       | Number   | 16                                      |          |
-| sampling | 采样率            | Number   | 1                                       | 0 - 1 之间 |
-| report   | 错误报告函数         | Function | `errorLogs => console.tabel(errorLogs)` |          |
+| 字段               | 描述                | 类型       | 默认值                                     | 备注       |
+| ---------------- | ----------------- | -------- | --------------------------------------- | -------- |
+| delay            | 错误处理间隔时间，单位 ms    | Number   | 2000                                    |          |
+| maxError         | 异常报错数量限制          | Number   | 16                                      |          |
+| sampling         | 采样率               | Number   | 1                                       | 0 - 1 之间 |
+| report           | 错误报告函数            | Function | `errorLogs => console.tabel(errorLogs)` |          |
+| handleCatchError | 处理 try..caych 的错误 | Function | function() {}                           |          |
 
 #### 关于 errorLogs：
 
@@ -52,7 +56,7 @@ jstracker.config({
   {
     type: 1, // 参考错误类型
     desc: '', // 错误描述信息
-    stack: 'no stack' // 堆栈信息
+    stack: 'no stack' // 堆栈信息，没有事返回 'no stack'
   },
   // ...
 ]
@@ -70,6 +74,37 @@ var ERROR_VIDEO = 6
 var ERROR_CONSOLE = 7
 ```
 
+### try..catch 抓取
+
+jstracker 暴露出一个 tryJS 对象，可以处理 try..catch 包裹等
+
+#### 将函数使用 try..catch 包装
+
+```javascript
+import jstracker from 'jstracker';
+
+this.handleSelect = jstracker.tryJS.wrap(this.handleSelect);
+```
+
+在函数执行出错时，会抛出 error 对象，可配置 `handleCatchError` 进行处理
+
+#### 只包装参数
+
+example:
+
+```javascript
+function test(type, callback) {
+  // ...
+  callback()
+}
+
+(jstracker.tryJS.wrapArgs(test))(4, function() {
+  ming = tian
+})
+```
+
+这时候只对参数进行 try..catch 包装
+
 ### script
 
 ```html
@@ -85,7 +120,7 @@ var ERROR_CONSOLE = 7
 </script>
 ```
 
-### ESM
+### module
 
 1.安装
 
