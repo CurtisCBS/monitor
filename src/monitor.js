@@ -28,7 +28,9 @@ monitor.config = function(opts) {
     handleCatchError: config.handleCatchError
   })
 
-  report = debounce(config.report, config.delay)
+  report = debounce(config.report, config.delay, function() {
+    errorList = []
+  })
 }
 
 // 定义的错误类型码
