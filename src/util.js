@@ -3,7 +3,7 @@
  *
  * @param {Function} func 实际要执行的函数
  * @param {Number} delay 延迟时间，单位是 ms
- * @param  {Function} callback 在 func 执行后的回调
+ * @param {Function} callback 在 func 执行后的回调
  *
  * @return {Function}
  */

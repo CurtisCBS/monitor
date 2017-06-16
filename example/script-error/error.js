@@ -10,7 +10,7 @@ jstracker.config({
   }
 })
 
-var clickHandleTry = jstracker.tryJS.wrapFunction(clickHandle)
+var clickHandleTry = jstracker.tryJS.wrap(clickHandle)
 document.querySelector('.send').addEventListener('click', clickHandleTry)
 
 
@@ -20,7 +20,7 @@ function goHome(type, callback) {
   callback()
 }
 
-// goHome = tryJS.wrapFunction(goHome)
+// goHome = tryJS.wrap(goHome)
 // goHome(4, function() {
 //   console.log('done')
 //   console.log(ming = tian)
@@ -28,5 +28,5 @@ function goHome(type, callback) {
 
 (jstracker.tryJS.wrapArgs(goHome))(4, function() {
   console.log('done')
-  console.log(ming = tian)
+  ming = tian
 })
