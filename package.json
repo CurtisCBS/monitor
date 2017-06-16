@@ -1,8 +1,8 @@
 {
-  "name": "monitor",
+  "name": "jstracker",
   "version": "1.0.0",
   "description": "JavaScript 异常监控处理",
-  "main": "dist/monitor.js",
+  "main": "dist/jstracker.js",
   "scripts": {
     "build": "rollup -c -w"
   },
@@ -10,6 +10,10 @@
     "type": "git",
     "url": "git+https://github.com/CurtisCBS/monitor.git"
   },
+  "keywords": [
+    "monitor",
+    "jstracker"
+  ],
   "author": "",
   "license": "MIT",
   "bugs": {

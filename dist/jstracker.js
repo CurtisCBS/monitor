@@ -1,7 +1,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
-	(global.monitor = factory());
+	(global.jstracker = factory());
 }(this, (function () { 'use strict';
 
 /**
@@ -109,9 +109,7 @@ function tryifyArgs(func) {
 }
 
 tryJS.wrapFunction = function(func) {
-  if (!isFunction(func)) return func
-
-  return tryify(func)
+  return isFunction(func) ? tryify(func) : func
 };
 
 tryJS.wrapArgs = tryifyArgs;
@@ -203,6 +201,7 @@ function formatRuntimerError(message, source, lineno, colno) {
 
 /**
  * 生成 laod 错误日志
+ *
  * @param  {Object} errorTarget
  * @return {Object}
  */

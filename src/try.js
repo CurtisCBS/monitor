@@ -51,9 +51,7 @@ function tryifyArgs(func) {
 }
 
 tryJS.wrapFunction = function(func) {
-  if (!isFunction(func)) return func
-
-  return tryify(func)
+  return isFunction(func) ? tryify(func) : func
 }
 
 tryJS.wrapArgs = tryifyArgs
