@@ -1,23 +1,25 @@
 {
   "name": "monitor",
   "version": "1.0.0",
-  "description": "通过对error的监听，获取异常的相关信息并添加这些信息到异常信息数组，在达到上限或者一定时间之后做处理",
-  "main": "monitor.js",
+  "description": "JavaScript 异常监控处理",
+  "main": "dist/monitor.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rollup -c -w"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/CurtisCBS/monitor.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/CurtisCBS/monitor/issues"
   },
   "homepage": "https://github.com/CurtisCBS/monitor#readme",
   "devDependencies": {
     "babel-eslint": "^7.2.3",
-    "eslint": "^4.0.0"
+    "eslint": "^4.0.0",
+    "rollup": "^0.43.0",
+    "rollup-watch": "^4.0.0"
   }
 }
