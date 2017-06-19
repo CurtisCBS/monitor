@@ -7,7 +7,7 @@ import {
 var tryJS = {}
 
 var config = {
-  handleCatchError: function() {}
+  handleTryCatchError: function() {}
 }
 
 export function setting(opts) {
@@ -27,7 +27,8 @@ function tryify(func) {
       try {
         return func.apply(this, arguments)
       } catch (error) {
-        config.handleCatchError(error)
+        config.handleTryCatchError(error)
+        window.ignoreError = true
 
         throw error
       }

@@ -7,6 +7,8 @@ import {
 var monitor = {}
 monitor.tryJS = tryJS
 
+// 忽略错误监听
+window.ignoreError = false
 // 错误日志列表
 var errorList = []
 // 错误处理回调
@@ -18,9 +20,6 @@ var config = {
   sampling: 1, // 采样率
   report: function(errorList) {
     console.table(errorList)
-  },
-  handleCatchError: function(error) {
-    console.log(error.message + ' from ' + error.stack)
   }
 }
 
@@ -28,7 +27,7 @@ init(config)
 
 function init(config) {
   setting({
-    handleCatchError: config.handleCatchError
+    handleTryCatchError: handleTryCatchError
   })
 
   report = debounce(config.report, config.delay, function() {
@@ -50,6 +49,7 @@ var ERROR_IMAGE = 4
 var ERROR_AUDIO = 5
 var ERROR_VIDEO = 6
 var ERROR_CONSOLE = 7
+var ERROR_TRY_CATHC = 8
 
 var LOAD_ERROR_TYPE = {
   SCRIPT: ERROR_SCRIPT,
@@ -61,6 +61,11 @@ var LOAD_ERROR_TYPE = {
 
 // 监听 JavaScript 报错异常(JavaScript runtime error)
 window.onerror = function() {
+  if (window.ignoreError) {
+    window.ignoreError = false
+    return
+  }
+
   handleError(formatRuntimerError.apply(null, arguments))
 }
 
@@ -87,6 +92,11 @@ console.error = (function(origin) {
   }
 })(console.error)
 
+// 处理 try..catch 错误
+function handleTryCatchError(error) {
+  handleError(formatTryCatchError(error))
+}
+
 /**
  * 生成 runtime 错误日志
  *
@@ -101,7 +111,7 @@ function formatRuntimerError(message, source, lineno, colno, error) {
   return {
     type: ERROR_RUNTIME,
     desc: message + ' at ' + source + ':' + lineno + ':' + colno,
-    stack: error && error.stack ? error.stack : 'no stack'
+    stack: error && error.stack ? error.stack : 'no stack' // IE <9, has no error stack
   }
 }
 
@@ -116,6 +126,20 @@ function formatLoadError(errorTarget) {
     type: LOAD_ERROR_TYPE[errorTarget.nodeName.toUpperCase()],
     desc: errorTarget.baseURI + '@' + (errorTarget.src || errorTarget.href),
     stack: 'no stack'
+  }
+}
+
+/**
+ * 生成 try..catch 错误日志
+ *
+ * @param  {Object} error error 对象
+ * @return {Object} 格式化后的对象
+ */
+function formatTryCatchError(error) {
+  return {
+    type: ERROR_TRY_CATHC,
+    desc: error.message,
+    stack: error.stack
   }
 }
 
