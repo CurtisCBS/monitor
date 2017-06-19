@@ -1,4 +1,8 @@
-# monitor: JavaScript 异常监控
+# jstracker: JavaScript stack trace
+
+[![build status](https://img.shields.io/travis/CurtisCBS/monitor/master.svg?style=flat-square)](https://travis-ci.org/CurtisCBS/monitor)
+[![npm version](https://img.shields.io/npm/v/jstracker.svg?style=flat-square)](https://www.npmjs.com/package/tstracker)
+[![npm downloads](https://img.shields.io/npm/dm/tstracker.svg?style=flat-square)](https://www.npmjs.com/package/tstracker)
 
 ## 简介
 
