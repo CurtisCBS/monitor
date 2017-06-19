@@ -9,10 +9,11 @@
  *
  * @param {Function} func 实际要执行的函数
  * @param {Number} delay 延迟时间，单位是 ms
+ * @param {Function} callback 在 func 执行后的回调
  *
  * @return {Function}
  */
-function debounce(func, delay) {
+function debounce(func, delay, callback) {
   var timer;
 
   return function() {
@@ -23,6 +24,8 @@ function debounce(func, delay) {
 
     timer = setTimeout(function() {
       func.apply(context, args);
+
+      !callback || callback();
     }, delay);
   }
 }
@@ -65,7 +68,7 @@ function arrayFrom(arrayLike) {
 var tryJS = {};
 
 var config$1 = {
-  handleCatchError: function() {}
+  handleTryCatchError: function() {}
 };
 
 function setting(opts) {
@@ -79,15 +82,21 @@ function setting(opts) {
  * @return {Function} 包装后的函数
  */
 function tryify(func) {
-  return function() {
-    try {
-      return func.apply(this, arguments)
-    } catch (error) {
-      config$1.handleCatchError(error);
+  // 确保只包装一次
+  if (!func._wrapped) {
+    func._wrapped = function() {
+      try {
+        return func.apply(this, arguments)
+      } catch (error) {
+        config$1.handleTryCatchError(error);
+        window.ignoreError = true;
 
-      throw error
-    }
+        throw error
+      }
+    };
   }
+
+  return func._wrapped
 }
 
 /**
@@ -115,6 +124,17 @@ tryJS.wrapArgs = tryifyArgs;
 var monitor = {};
 monitor.tryJS = tryJS;
 
+setting({ handleTryCatchError: handleTryCatchError });
+
+monitor.init = function(opts) {
+  __config(opts);
+  __init();
+};
+
+// 忽略错误监听
+window.ignoreError = false;
+// UA
+var ua = window.navigator.userAgent;
 // 错误日志列表
 var errorList = [];
 // 错误处理回调
@@ -123,20 +143,7 @@ var report = function() {};
 var config = {
   delay: 2000, // 错误处理间隔时间
   maxError: 16, // 异常报错数量限制
-  sampling: 1, // 采样率
-  report: function(errorList) {
-    console.table(errorList);
-  }
-};
-
-monitor.config = function(opts) {
-  merge(opts, config);
-
-  setting({
-    handleCatchError: config.handleCatchError
-  });
-
-  report = debounce(config.report, config.delay);
+  sampling: 1 // 采样率
 };
 
 // 定义的错误类型码
@@ -147,6 +154,7 @@ var ERROR_IMAGE = 4;
 var ERROR_AUDIO = 5;
 var ERROR_VIDEO = 6;
 var ERROR_CONSOLE = 7;
+var ERROR_TRY_CATHC = 8;
 
 var LOAD_ERROR_TYPE = {
   SCRIPT: ERROR_SCRIPT,
@@ -156,33 +164,53 @@ var LOAD_ERROR_TYPE = {
   VIDEO: ERROR_VIDEO
 };
 
-// 监听 JavaScript 报错异常(JavaScript runtime error)
-window.onerror = function() {
-  handleError(formatRuntimerError.apply(null, arguments));
-};
+function __config(opts) {
+  merge(opts, config);
 
-// 监听资源加载错误(JavaScript Scource failed to load)
-window.addEventListener('error', function(event) {
-  // 过滤 target 为 window 的异常，避免与上面的 onerror 重复
-  var errorTarget = event.target;
-  if (errorTarget !== window && errorTarget.nodeName && LOAD_ERROR_TYPE[errorTarget.nodeName.toUpperCase()]) {
-    handleError(formatLoadError(errorTarget));
-  }
-}, true);
+  report = debounce(config.report, config.delay, function() {
+    errorList = [];
+  });
+}
 
-// 针对 vue 报错重写 console.error
-// TODO
-console.error = (function(origin) {
-  return function(info) {
-    var errorLog = {
-      type: ERROR_CONSOLE,
-      desc: info
-    };
+function __init() {
+  // 监听 JavaScript 报错异常(JavaScript runtime error)
+  window.onerror = function() {
+    if (window.ignoreError) {
+      window.ignoreError = false;
+      return
+    }
 
-    handleError(errorLog);
-    origin.call(console, info);
-  }
-})(console.error);
+    handleError(formatRuntimerError.apply(null, arguments));
+  };
+
+  // 监听资源加载错误(JavaScript Scource failed to load)
+  window.addEventListener('error', function(event) {
+    // 过滤 target 为 window 的异常，避免与上面的 onerror 重复
+    var errorTarget = event.target;
+    if (errorTarget !== window && errorTarget.nodeName && LOAD_ERROR_TYPE[errorTarget.nodeName.toUpperCase()]) {
+      handleError(formatLoadError(errorTarget));
+    }
+  }, true);
+
+  // 针对 vue 报错重写 console.error
+  // TODO
+  console.error = (function(origin) {
+    return function(info) {
+      var errorLog = {
+        type: ERROR_CONSOLE,
+        desc: info
+      };
+
+      handleError(errorLog);
+      origin.call(console, info);
+    }
+  })(console.error);
+}
+
+// 处理 try..catch 错误
+function handleTryCatchError(error) {
+  handleError(formatTryCatchError(error));
+}
 
 /**
  * 生成 runtime 错误日志
@@ -198,7 +226,8 @@ function formatRuntimerError(message, source, lineno, colno, error) {
   return {
     type: ERROR_RUNTIME,
     desc: message + ' at ' + source + ':' + lineno + ':' + colno,
-    stack: error && error.stack ? error.stack : 'no stack'
+    stack: error && error.stack ? error.stack : 'no stack', // IE <9, has no error stack
+    ua: ua
   }
 }
 
@@ -212,7 +241,23 @@ function formatLoadError(errorTarget) {
   return {
     type: LOAD_ERROR_TYPE[errorTarget.nodeName.toUpperCase()],
     desc: errorTarget.baseURI + '@' + (errorTarget.src || errorTarget.href),
-    stack: 'no stack'
+    stack: 'no stack',
+    ua: ua
+  }
+}
+
+/**
+ * 生成 try..catch 错误日志
+ *
+ * @param  {Object} error error 对象
+ * @return {Object} 格式化后的对象
+ */
+function formatTryCatchError(error) {
+  return {
+    type: ERROR_TRY_CATHC,
+    desc: error.message,
+    stack: error.stack,
+    ua: ua
   }
 }
 
