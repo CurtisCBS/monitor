@@ -4,9 +4,10 @@ function clickHandle() {
 
 console.log(jstracker)
 
-jstracker.config({
-  handleCatchError: function(data) {
-    console.log(data.stack)
+jstracker.init({
+  report: function(errorLogs) {
+    console.table(errorLogs)
+    console.log('发送请求')
   }
 })
 
