@@ -18,12 +18,15 @@ var config = {
   sampling: 1, // 采样率
   report: function(errorList) {
     console.table(errorList)
+  },
+  handleCatchError: function(error) {
+    console.log(error.message + ' from ' + error.stack)
   }
 }
 
-monitor.config = function(opts) {
-  merge(opts, config)
+init(config)
 
+function init(config) {
   setting({
     handleCatchError: config.handleCatchError
   })
@@ -31,6 +34,12 @@ monitor.config = function(opts) {
   report = debounce(config.report, config.delay, function() {
     errorList = []
   })
+}
+
+monitor.config = function(opts) {
+  merge(opts, config)
+
+  init(config)
 }
 
 // 定义的错误类型码
