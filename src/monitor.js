@@ -17,28 +17,21 @@ var report = function() {}
 var config = {
   delay: 2000, // 错误处理间隔时间
   maxError: 16, // 异常报错数量限制
-  sampling: 1, // 采样率
-  report: function(errorList) {
-    console.table(errorList)
-  }
+  sampling: 1 // 采样率
 }
 
-init(config)
-
-function init(config) {
-  setting({
-    handleTryCatchError: handleTryCatchError
-  })
-
-  report = debounce(config.report, config.delay, function() {
-    errorList = []
-  })
-}
+setting({
+  handleTryCatchError: handleTryCatchError
+})
 
 monitor.config = function(opts) {
   merge(opts, config)
 
-  init(config)
+  // TODO
+  // 去除默认 report 函数的执行
+  report = debounce(config.report, config.delay, function() {
+    errorList = []
+  })
 }
 
 // 定义的错误类型码
