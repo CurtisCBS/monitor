@@ -23,31 +23,53 @@
 
 ## 使用指南
 
-### API
+### Example
 
-example:
+#### script mode
+
+```html
+<script src="../dist/jstracker.js"></script>
+
+<script>
+  jstracker.config({
+    delay: 1000,
+    maxError: 10,
+    sampling: 1,
+    report: function(errorLogs) {
+      console.table(errorLogs)
+    }
+  })
+</script>
+```
+
+#### module mode
+
+1.安装
+
+```sh
+npm install jstracker --save-dev
+```
+
+2.在文件中添加
 
 ```javascript
+import jstracker from 'jstracker'
+
 jstracker.config({
-  delay: 1000,
-  maxError: 10,
-  sampling: 1,
   report: function(errorLogs) {
-    console.table(errorLogs)
-  },
-  handleCatchError: function(error) {
-    console.log(error.stack)
+    // console.log('send')
   }
 })
 ```
 
-| 字段               | 描述                | 类型       | 默认值                                     | 备注       |
-| ---------------- | ----------------- | -------- | --------------------------------------- | -------- |
-| delay            | 错误处理间隔时间，单位 ms    | Number   | 2000                                    |          |
-| maxError         | 异常报错数量限制          | Number   | 16                                      |          |
-| sampling         | 采样率               | Number   | 1                                       | 0 - 1 之间 |
-| report           | 错误报告函数            | Function | `errorLogs => console.tabel(errorLogs)` |          |
-| handleCatchError | 处理 try..caych 的错误 | Function | function() {}                           |          |
+### API
+
+| 字段       | 描述             | 类型       | 默认值                                     | 备注       |
+| -------- | -------------- | -------- | --------------------------------------- | -------- |
+| delay    | 错误处理间隔时间，单位 ms | Number   | 2000                                    |          |
+| maxError | 异常报错数量限制       | Number   | 16                                      |          |
+| sampling | 采样率            | Number   | 1                                       | 0 - 1 之间 |
+| report   | 错误报告函数         | Function | `errorLogs => console.tabel(errorLogs)` |          |
 
 #### 关于 errorLogs：
 
@@ -56,7 +78,7 @@ jstracker.config({
   {
     type: 1, // 参考错误类型
     desc: '', // 错误描述信息
-    stack: 'no stack' // 堆栈信息，没有事返回 'no stack'
+    stack: 'no stack' // 堆栈信息。无堆栈信息时返回 'no stack'
   },
   // ...
 ]
@@ -72,11 +94,12 @@ var ERROR_IMAGE = 4
 var ERROR_AUDIO = 5
 var ERROR_VIDEO = 6
 var ERROR_CONSOLE = 7
+var ERROR_TRY_CATCH = 8
 ```
 
-### try..catch 抓取
+### try..catch 捕获
 
-jstracker 暴露出一个 tryJS 对象，可以处理 try..catch 包裹等
+jstracker 暴露出一个 `tryJS` 对象，可以处理 try..catch 包裹等
 
 #### 将函数使用 try..catch 包装
 
@@ -86,11 +109,7 @@ import jstracker from 'jstracker';
 this.handleSelect = jstracker.tryJS.wrap(this.handleSelect);
 ```
 
-在函数执行出错时，会抛出 error 对象，可配置 `handleCatchError` 进行处理
-
 #### 只包装参数
-
-example:
 
 ```javascript
 function test(type, callback) {
@@ -99,47 +118,11 @@ function test(type, callback) {
 }
 
 (jstracker.tryJS.wrapArgs(test))(4, function() {
-  ming = tian
+  a = b
 })
 ```
 
 这时候只对参数进行 try..catch 包装
-
-### script
-
-```html
-<script src="../dist/jstracker.js"></script>
-
-<script>
-  jstracker.config({
-    report: function(data) {
-      console.table(data)
-      console.log('send')
-    }
-  })
-</script>
-```
-
-### module
-
-1.安装
-
-```sh
-npm install jstracker --save-dev
-```
-
-2.在文件中添加
-
-```javascript
-import jstracker from 'jstracker'
-
-jstracker.config({
-  report: function(data) {
-    console.table(data)
-    console.log('send')
-  }
-})
-```
 
 ## 后续功能
 
