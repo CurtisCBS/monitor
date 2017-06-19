@@ -31,7 +31,7 @@
 <script src="../dist/jstracker.js"></script>
 
 <script>
-  jstracker.config({
+  jstracker.init({
     delay: 1000,
     maxError: 10,
     sampling: 1,
@@ -55,7 +55,7 @@ npm install jstracker --save-dev
 ```javascript
 import jstracker from 'jstracker'
 
-jstracker.config({
+jstracker.init({
   report: function(errorLogs) {
     // console.log('send')
   }
@@ -78,7 +78,8 @@ jstracker.config({
   {
     type: 1, // 参考错误类型
     desc: '', // 错误描述信息
-    stack: 'no stack' // 堆栈信息。无堆栈信息时返回 'no stack'
+    stack: 'no stack', // 堆栈信息。无堆栈信息时返回 'no stack'
+    ua: '' // userAgent
   },
   // ...
 ]
