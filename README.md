@@ -1,7 +1,7 @@
 # jstracker: JavaScript stack trace
 
 [![build status](https://img.shields.io/travis/CurtisCBS/monitor/master.svg?style=flat-square)](https://travis-ci.org/CurtisCBS/monitor)
-[![npm version](https://img.shields.io/npm/v/jstracker.svg?style=flat-square)](https://www.npmjs.com/package/tstracker)
+[![npm version](https://img.shields.io/npm/v/jstracker.svg?style=flat-square)](https://www.npmjs.com/package/jstracker)
 [![npm downloads](https://img.shields.io/npm/dm/tstracker.svg?style=flat-square)](https://www.npmjs.com/package/tstracker)
 
 ## 简介
@@ -84,7 +84,6 @@ jstracker.init({
     type: 1, // 参考错误类型
     desc: '', // 错误描述信息
     stack: 'no stack', // 堆栈信息。无堆栈信息时返回 'no stack'
-    ua: '' // userAgent
   },
   // ...
 ]
