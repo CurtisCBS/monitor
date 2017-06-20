@@ -17,13 +17,14 @@ monitor.init = function(opts) {
 // 忽略错误监听
 window.ignoreError = false
 // UA
-var ua = window.navigator.userAgent
+// var ua = window.navigator.userAgent
 // 错误日志列表
 var errorList = []
 // 错误处理回调
 var report = function() {}
 
 var config = {
+  concat: true,
   delay: 2000, // 错误处理间隔时间
   maxError: 16, // 异常报错数量限制
   sampling: 1 // 采样率
@@ -109,8 +110,7 @@ function formatRuntimerError(message, source, lineno, colno, error) {
   return {
     type: ERROR_RUNTIME,
     desc: message + ' at ' + source + ':' + lineno + ':' + colno,
-    stack: error && error.stack ? error.stack : 'no stack', // IE <9, has no error stack
-    ua: ua
+    stack: error && error.stack ? error.stack : 'no stack' // IE <9, has no error stack
   }
 }
 
@@ -124,8 +124,7 @@ function formatLoadError(errorTarget) {
   return {
     type: LOAD_ERROR_TYPE[errorTarget.nodeName.toUpperCase()],
     desc: errorTarget.baseURI + '@' + (errorTarget.src || errorTarget.href),
-    stack: 'no stack',
-    ua: ua
+    stack: 'no stack'
   }
 }
 
@@ -139,8 +138,7 @@ function formatTryCatchError(error) {
   return {
     type: ERROR_TRY_CATHC,
     desc: error.message,
-    stack: error.stack,
-    ua: ua
+    stack: error.stack
   }
 }
 
@@ -150,8 +148,13 @@ function formatTryCatchError(error) {
  * @param  {Object} errorLog    错误日志
  */
 function handleError(errorLog) {
-  pushError(errorLog)
-  report(errorList)
+  // 是否延时处理
+  if (!config.concat) {
+    config.report([errorLog])
+  } else {
+    pushError(errorLog)
+    report(errorList)
+  }
 }
 
 /**
