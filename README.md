@@ -1,7 +1,7 @@
 # jstracker: JavaScript stack trace
 
 [![build status](https://img.shields.io/travis/CurtisCBS/monitor/master.svg?style=flat-square)](https://travis-ci.org/CurtisCBS/monitor)
-[![npm version](https://img.shields.io/npm/v/jstracker.svg?style=flat-square)](https://www.npmjs.com/package/tstracker)
+[![npm version](https://img.shields.io/npm/v/jstracker.svg?style=flat-square)](https://www.npmjs.com/package/jstracker)
 [![npm downloads](https://img.shields.io/npm/dm/tstracker.svg?style=flat-square)](https://www.npmjs.com/package/tstracker)
 
 ## 简介
@@ -68,12 +68,13 @@ jstracker.init({
 
 ### API
 
-| 字段       | 描述             | 类型       | 默认值                                     | 备注       |
-| -------- | -------------- | -------- | --------------------------------------- | -------- |
-| delay    | 错误处理间隔时间，单位 ms | Number   | 2000                                    |          |
-| maxError | 异常报错数量限制       | Number   | 16                                      |          |
-| sampling | 采样率            | Number   | 1                                       | 0 - 1 之间 |
-| report   | 错误报告函数         | Function | `errorLogs => console.tabel(errorLogs)` |          |
+| 字段       | 描述                | 类型       | 默认值                                     | 备注                      |
+| -------- | ----------------- | -------- | --------------------------------------- | ----------------------- |
+| concat   | 是否延时处理，默认延时 2s 处理 | Boolean  | `true`                                  |                         |
+| delay    | 错误处理间隔时间，单位 ms    | Number   | `2000`                                  | 当 `concat` 为 `false` 无效 |
+| maxError | 一次处理的异常报错数量限制     | Number   | `16`                                    | 当 `concat` 为 `false` 无效 |
+| sampling | 采样率               | Number   | `1`                                     | 0 - 1 之间                |
+| report   | 错误报告函数            | Function | `errorLogs => console.tabel(errorLogs)` | `errorLogs` 定义见下述说明     |
 
 #### 关于 errorLogs：
 
@@ -83,7 +84,6 @@ jstracker.init({
     type: 1, // 参考错误类型
     desc: '', // 错误描述信息
     stack: 'no stack', // 堆栈信息。无堆栈信息时返回 'no stack'
-    ua: '' // userAgent
   },
   // ...
 ]
