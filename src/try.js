@@ -6,12 +6,19 @@ import {
 
 var tryJS = {}
 
+tryJS.wrap = wrap
+tryJS.wrapArgs = tryifyArgs
+
 var config = {
   handleTryCatchError: function() {}
 }
 
 export function setting(opts) {
   merge(opts, config)
+}
+
+function wrap(func) {
+  return isFunction(func) ? tryify(func) : func
 }
 
 /**
@@ -47,17 +54,11 @@ function tryify(func) {
 function tryifyArgs(func) {
   return function() {
     var args = arrayFrom(arguments).map(function(arg) {
-      return isFunction(arg) ? tryify(arg) : arg
+      return wrap(arg)
     })
 
     return func.apply(this, args)
   }
 }
-
-tryJS.wrap = function(func) {
-  return isFunction(func) ? tryify(func) : func
-}
-
-tryJS.wrapArgs = tryifyArgs
 
 export default tryJS
