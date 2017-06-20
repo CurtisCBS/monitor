@@ -150,7 +150,7 @@ function formatTryCatchError(error) {
 function handleError(errorLog) {
   // 是否延时处理
   if (!config.concat) {
-    config.report([errorLog])
+    !needReport(config.sampling) || config.report([errorLog])
   } else {
     pushError(errorLog)
     report(errorList)
