@@ -68,12 +68,13 @@ jstracker.init({
 
 ### API
 
-| 字段       | 描述             | 类型       | 默认值                                     | 备注       |
-| -------- | -------------- | -------- | --------------------------------------- | -------- |
-| delay    | 错误处理间隔时间，单位 ms | Number   | 2000                                    |          |
-| maxError | 异常报错数量限制       | Number   | 16                                      |          |
-| sampling | 采样率            | Number   | 1                                       | 0 - 1 之间 |
-| report   | 错误报告函数         | Function | `errorLogs => console.tabel(errorLogs)` |          |
+| 字段       | 描述                | 类型       | 默认值                                     | 备注                      |
+| -------- | ----------------- | -------- | --------------------------------------- | ----------------------- |
+| concat   | 是否延时处理，默认延时 2s 处理 | Boolean  | `true`                                  |                         |
+| delay    | 错误处理间隔时间，单位 ms    | Number   | `2000`                                  | 当 `concat` 为 `false` 无效 |
+| maxError | 一次处理的异常报错数量限制     | Number   | `16`                                    | 当 `concat` 为 `false` 无效 |
+| sampling | 采样率               | Number   | `1`                                     | 0 - 1 之间                |
+| report   | 错误报告函数            | Function | `errorLogs => console.tabel(errorLogs)` | `errorLogs` 定义见下述说明     |
 
 #### 关于 errorLogs：
 
