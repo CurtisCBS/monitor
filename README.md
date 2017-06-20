@@ -6,7 +6,7 @@
 
 ## 简介
 
-通过对 error 的监听，获取异常的相关信息并添加这些信息到异常信息数组，在达到上限或者一定时间之后做处理(返回服务端保存数据之类)
+通过对 error 事件的监听，获取异常相关信息并缓存，在一定时间之后报告处理。
 
 ## 功能
 
@@ -15,15 +15,15 @@
 1. JavaScript runtime 异常捕捉 √
 2. 静态资源 load faided 异常捕捉 √
 3. console.error 的异常捕获 √
-4. 记录静态资源加载时长
+4. try..catch 错误捕获 √
+5. 记录静态资源加载时长
 
 ## 实现概述
 
 * 通过对 [`window.onerror`](https://developer.mozilla.org/en/docs/Web/API/GlobalEventHandlers/onerror) 进行监听，捕获 JavaScript 的运行时异常，记录错误：event + 错误来源(source) + 错误行数 + 错误列数等数据
-
 * 通过对 `window.addEventListener` 监听 `error` 事件类型，获取静态资源报错，包含 JavaScript 文件，CSS 文件，图片，视频，音频。
-
 * 主要针对 vue 的异常捕获，重写了 `console.error` 事件，在捕获异常先记录错误信息的描述，再 `next` 到原始的 `console.error`
+* 提供包装函数对其进行 try..catch 包装，捕获异常并处理
 
 ## 使用指南
 
@@ -51,7 +51,7 @@
 1.安装
 
 ```sh
-npm install jstracker --save-dev
+npm install jstracker --save
 ```
 
 2.在文件中添加
@@ -60,6 +60,7 @@ npm install jstracker --save-dev
 import jstracker from 'jstracker'
 
 jstracker.init({
+  concat: false,
   report: function(errorLogs) {
     // console.log('send')
   }
